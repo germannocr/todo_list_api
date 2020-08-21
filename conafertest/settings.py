@@ -25,7 +25,7 @@ SECRET_KEY = 'jh^=piu&a!b*4k+6kyljvc+p#^i_38pql7c#&gxhrm3id@gh-='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://conaferapi.herokuapp.com']
 
 REST_FRAMEWORK = {
     # Authentication Scheme
@@ -96,10 +96,10 @@ WSGI_APPLICATION = 'conafertest.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd9gp3lmi0gqptn',
-        'USER': 'ihbuwcwbbmojgm',
-        'PASSWORD': 'b390aef1e25fda1739335dc0f173d7591e4cdc1110220edad0277096ae800e02',
-        'HOST': 'ec2-54-159-138-67.compute-1.amazonaws.com',
+        'NAME': 'da2l14jq5iapi1',
+        'USER': 'klzkguxiwrmlhs',
+        'PASSWORD': 'cf248497072490fb35d860d3dfb4e54114d8d352b27287f12658bf66a6c61f94',
+        'HOST': 'ec2-54-86-57-171.compute-1.amazonaws.com',
         'PORT': '5432'
     }
 }
