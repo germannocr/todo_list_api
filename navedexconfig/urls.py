@@ -16,20 +16,20 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework_jwt.views import refresh_jwt_token
+from rest_framework_jwt.views import refresh_jwt_token, obtain_jwt_token
 
 from navedexapi import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('rest_auth.urls')),
     path('registration/', include('rest_auth.registration.urls')),
     url(r'^refresh-token/', refresh_jwt_token),
+    url(r'^login/', obtain_jwt_token),
 
-    url(r'^naver/$', views.add_naver, name='post_naver'),
-    url(r'^naver/$', views.retrieve_all_navers, name='get_all_navers'),
-    url(r'^naver/<int:naver_id>$', views.retrieve_naver_by_id, name='get_naver_by-id'),
-    url(r'^naver/<int:naver_id>$', views.update_naver, name='update_naver'),
-    url(r'^naver/<int:naver_id>$', views.delete_naver, name='delete_naver'),
+    url(r'^createnaver/$', views.add_naver, name='post_naver'),
+    url(r'^getnaverslist/$', views.retrieve_navers_list, name='get_all_navers'),
+    url(r'^getnaver/<int:naver_id>$', views.retrieve_naver_by_id, name='get_naver_by_id'),
+    url(r'^updatenaver/<int:naver_id>$', views.update_naver, name='update_naver'),
+    url(r'^deletenaver/<int:naver_id>$', views.delete_naver, name='delete_naver'),
 ]
 

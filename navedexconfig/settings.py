@@ -25,8 +25,8 @@ SECRET_KEY = 'jh^=piu&a!b*4k+6kyljvc+p#^i_38pql7c#&gxhrm3id@gh-='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['navedexapi.herokuapp.com']
-
+# ALLOWED_HOSTS = ['navedexapi.herokuapp.com']
+ALLOWED_HOSTS = []
 JWT_AUTH = {
     'JWT_ENCODE_HANDLER':
         'rest_framework_jwt.utils.jwt_encode_handler',
@@ -36,16 +36,13 @@ JWT_AUTH = {
 }
 
 REST_FRAMEWORK = {
-    # Authentication Scheme
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-    ),
-    # Permission Policies
-    'DEFAULT_PERMISSION_CLASSES': [
+    'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
 }
 
 # Application definition
@@ -57,7 +54,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'navedexapi',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
@@ -65,6 +61,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'rest_auth.registration',
+    'navedexapi'
 ]
 
 MIDDLEWARE = [
