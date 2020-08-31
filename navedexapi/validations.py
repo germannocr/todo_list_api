@@ -21,10 +21,10 @@ def validate_project_post_body(request_body: dict):
         if current_required_field not in request_fields:
             raise MissingRequiredFields()
 
-        if not isinstance(current_required_field, str) and current_required_field == 'name':
+        if not isinstance(request_body[current_required_field], str) and current_required_field == 'name':
             raise InvalidFieldType()
 
-        if not isinstance(current_required_field, list) and current_required_field == 'navers':
+        if not isinstance(request_body[current_required_field], list) and current_required_field == 'navers':
             raise InvalidFieldType()
 
 

@@ -137,7 +137,7 @@ def retrieve_project_by_id(request, project_id: int):
     try:
         retrieved_project = retrieve_project(project_id=project_id, user_id=user.id)
         if retrieved_project:
-            retrieved_navers = retrieve_project_navers(navers_list=retrieved_project.navers)
+            retrieved_navers = retrieve_project_navers(navers_list=retrieved_project[0].navers)
             serialized_response = ProjectSerializer(retrieved_project, many=True)
             return map_get_project_response(serialized_response=serialized_response, navers_list=retrieved_navers)
         else:
@@ -202,7 +202,7 @@ def update_project(request, project_id: int):
         retrieved_project = retrieve_project(project_id=project_id, user_id=user.id)
         if retrieved_project:
             updated_project = update_retrieved_project(request_body=request_body,
-                                                       retrieved_project=retrieved_project)
+                                                       retrieved_project=retrieved_project[0])
             serializer_response = ProjectSerializer(updated_project)
             mapped_response = map_patch_project_response(serializer_response)
             return mapped_response
@@ -227,7 +227,7 @@ def delete_project(request, project_id: int):
         retrieved_project = retrieve_project(project_id=project_id, user_id=user.id)
 
         if retrieved_project:
-            delete_retrieved_project(retrieved_project=retrieved_project)
+            delete_retrieved_project(retrieved_project=retrieved_project[0])
             mapped_response = map_delete_project_response()
             return mapped_response
         else:

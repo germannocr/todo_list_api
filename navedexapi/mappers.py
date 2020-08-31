@@ -66,9 +66,9 @@ def map_patch_project_response(serialized_response):
 
 def map_get_project_response(serialized_response: ProjectSerializer, navers_list: list = None):
     if navers_list:
-        serialized_response.data["projects"] = []
+        serialized_response.data[0]["navers"] = []
         for current_project in navers_list:
-            serialized_response.data["projects"].append(
+            serialized_response.data[0]["navers"].append(
                 {
                     "id": current_project.id,
                     "name": current_project.name
@@ -83,7 +83,8 @@ def map_get_project_response(serialized_response: ProjectSerializer, navers_list
             status=status.HTTP_200_OK
         )
     else:
-        del serialized_response.data['navers']
+        for current_project in serialized_response.data:
+            del current_project['navers']
         return JsonResponse(
             {
                 'content': serialized_response.data

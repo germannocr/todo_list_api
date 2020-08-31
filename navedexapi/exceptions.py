@@ -10,7 +10,7 @@ class MissingRequiredFields(APIException):
 
 class InvalidFieldType(APIException):
     status_code = 400
-    default_detail = "Invalid or incorrect type of one of the fields in the request. All fields are of type string."
+    default_detail = "Invalid or incorrect type of one of the fields in the request."
     default_code = "incorrect_field_type"
 
 

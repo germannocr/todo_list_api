@@ -25,7 +25,7 @@ class Project(models.Model):
     class Meta:
         db_table = 'post'
 
-    id = models.IntegerField(primary_key=True, unique=True)
+    id = models.AutoField(primary_key=True, unique=True)
     name = models.CharField(max_length=120)
     navers = ArrayField(models.IntegerField(null=True, blank=True))
     created_by_user = models.IntegerField()
