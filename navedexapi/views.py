@@ -24,12 +24,12 @@ from navedexapi.validations import validate_naver_post_body, validate_naver_quer
 @permission_classes([IsAuthenticated])
 def delete_naver(request, naver_id: int):
     validate_object_id(naver_id)
-
+    user = request.user
     try:
-        retrieved_naver = retrieve_naver(naver_id)
+        retrieved_naver = retrieve_naver(naver_id=naver_id, user_id=user.id)
 
         if retrieved_naver:
-            delete_retrieved_naver(retrieved_naver=retrieved_naver)
+            delete_retrieved_naver(retrieved_naver=retrieved_naver[0])
             mapped_response = map_delete_naver_response()
             return mapped_response
         else:
@@ -48,11 +48,12 @@ def delete_naver(request, naver_id: int):
 def update_naver(request, naver_id: int):
     request_body = json.loads(request.body)
     validate_object_id(naver_id)
+    user = request.user
     try:
-        retrieved_naver = retrieve_naver(naver_id)
+        retrieved_naver = retrieve_naver(naver_id=naver_id, user_id=user.id)
         if retrieved_naver:
             updated_naver = update_retrieved_naver(request_body=request_body,
-                                                   retrieved_naver=retrieved_naver)
+                                                   retrieved_naver=retrieved_naver[0])
             serializer_response = NaverSerializer(updated_naver)
             mapped_response = map_patch_naver_response(serializer_response)
             return mapped_response
@@ -74,7 +75,7 @@ def add_naver(request):
     try:
         validate_naver_post_body(request_body=request_body)
         new_naver = create_naver(request_body=request_body,
-                                request_user=user)
+                                 request_user=user)
         serializer_response = NaverSerializer(new_naver)
         mapped_response = map_post_naver_response(serializer_response)
         return mapped_response
@@ -91,7 +92,7 @@ def add_naver(request):
 @permission_classes([IsAuthenticated])
 def retrieve_navers_list(request):
     query_params_filters = request.query_params
-    validate_naver_query_params(query_params_filters)
+    query_params_filters = validate_naver_query_params(query_params_filters)
     user = request.user
     try:
         retrieved_navers_list = retrieve_all_navers(query_params_filters=query_params_filters, user_id=user.id)
@@ -114,7 +115,7 @@ def retrieve_naver_by_id(request, naver_id: int):
     try:
         retrieved_naver = retrieve_naver(naver_id=naver_id, user_id=user.id)
         if retrieved_naver:
-            retrieved_projects = retrieve_naver_projects(projects_list=retrieved_naver.projects)
+            retrieved_projects = retrieve_naver_projects(projects_list=retrieved_naver[0].projects)
             serialized_response = NaverSerializer(retrieved_naver, many=True)
             return map_get_naver_response(serialized_response, retrieved_projects)
         else:
