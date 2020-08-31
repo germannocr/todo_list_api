@@ -31,5 +31,11 @@ urlpatterns = [
     path('getnaver/<int:naver_id>/', views.retrieve_naver_by_id, name='get_naver_by_id'),
     path('updatenaver/<int:naver_id>', views.update_naver, name='update_naver'),
     path('deletenaver/<int:naver_id>', views.delete_naver, name='delete_naver'),
+
+    url(r'^createproject/$', views.add_project, name='post_project'),
+    url(r'^getprojectlist/$', views.retrieve_projects_list, name='get_all_projects'),
+    path('getproject/<int:project_id>/', views.retrieve_project_by_id, name='get_project_by_id'),
+    path('updateproject/<int:project_id>', views.update_project, name='update_project'),
+    path('deleteproject/<int:project_id>', views.delete_project, name='delete_project')
 ]
 
