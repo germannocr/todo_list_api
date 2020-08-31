@@ -28,8 +28,8 @@ urlpatterns = [
 
     url(r'^createnaver/$', views.add_naver, name='post_naver'),
     url(r'^getnaverslist/$', views.retrieve_navers_list, name='get_all_navers'),
-    url(r'^getnaver/<int:naver_id>$', views.retrieve_naver_by_id, name='get_naver_by_id'),
-    url(r'^updatenaver/<int:naver_id>$', views.update_naver, name='update_naver'),
-    url(r'^deletenaver/<int:naver_id>$', views.delete_naver, name='delete_naver'),
+    path('getnaver/<int:naver_id>/', views.retrieve_naver_by_id, name='get_naver_by_id'),
+    path('updatenaver/<int:naver_id>', views.update_naver, name='update_naver'),
+    path('deletenaver/<int:naver_id>', views.delete_naver, name='delete_naver'),
 ]
 
