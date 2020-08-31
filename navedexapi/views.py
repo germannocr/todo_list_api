@@ -5,6 +5,7 @@ from rest_framework import status
 
 # Create your views here.
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import APIException
 from rest_framework.permissions import IsAuthenticated
 
 from navedexapi.exceptions import NaverNotFound, ProjectNotFound
@@ -34,9 +35,18 @@ def delete_naver(request, naver_id: int):
             return mapped_response
         else:
             raise NaverNotFound(code=404)
-    except Exception as e:
+
+    except APIException as custom_exception:
         return JsonResponse({
-            'error': str(e)
+            'more info': custom_exception.default_detail
+        },
+            safe=False,
+            status=custom_exception.status_code
+        )
+
+    except Exception as exception:
+        return JsonResponse({
+            'error': str(exception)
         },
             safe=False,
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -59,9 +69,18 @@ def update_naver(request, naver_id: int):
             return mapped_response
         else:
             raise NaverNotFound(code=404)
-    except Exception as e:
+
+    except APIException as custom_exception:
         return JsonResponse({
-            'error': str(e)
+            'more info': custom_exception.default_detail
+        },
+            safe=False,
+            status=custom_exception.status_code
+        )
+
+    except Exception as exception:
+        return JsonResponse({
+            'error': str(exception)
         },
             safe=False,
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -79,9 +98,18 @@ def add_naver(request):
         serializer_response = NaverSerializer(new_naver)
         mapped_response = map_post_naver_response(serializer_response)
         return mapped_response
-    except Exception as e:
+
+    except APIException as custom_exception:
         return JsonResponse({
-            'error': str(e)
+            'more info': custom_exception.default_detail
+        },
+            safe=False,
+            status=custom_exception.status_code
+        )
+
+    except Exception as exception:
+        return JsonResponse({
+            'error': str(exception)
         },
             safe=False,
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -98,9 +126,18 @@ def retrieve_navers_list(request):
         retrieved_navers_list = retrieve_all_navers(query_params_filters=query_params_filters, user_id=user.id)
         serialized_response = NaverSerializer(retrieved_navers_list, many=True)
         return map_get_naver_response(serialized_response)
-    except Exception as e:
+
+    except APIException as custom_exception:
         return JsonResponse({
-            'error': str(e)
+            'more info': custom_exception.default_detail
+        },
+            safe=False,
+            status=custom_exception.status_code
+        )
+
+    except Exception as exception:
+        return JsonResponse({
+            'error': str(exception)
         },
             safe=False,
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -120,9 +157,18 @@ def retrieve_naver_by_id(request, naver_id: int):
             return map_get_naver_response(serialized_response, retrieved_projects)
         else:
             raise NaverNotFound(code=404)
-    except Exception as e:
+
+    except APIException as custom_exception:
         return JsonResponse({
-            'error': str(e)
+            'more info': custom_exception.default_detail
+        },
+            safe=False,
+            status=custom_exception.status_code
+        )
+
+    except Exception as exception:
+        return JsonResponse({
+            'error': str(exception)
         },
             safe=False,
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -142,9 +188,18 @@ def retrieve_project_by_id(request, project_id: int):
             return map_get_project_response(serialized_response=serialized_response, navers_list=retrieved_navers)
         else:
             raise ProjectNotFound(code=404)
-    except Exception as e:
+
+    except APIException as custom_exception:
         return JsonResponse({
-            'error': str(e)
+            'more info': custom_exception.default_detail
+        },
+            safe=False,
+            status=custom_exception.status_code
+        )
+
+    except Exception as exception:
+        return JsonResponse({
+            'error': str(exception)
         },
             safe=False,
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -162,9 +217,18 @@ def retrieve_projects_list(request):
 
         serialized_response = ProjectSerializer(retrieved_projects_list, many=True)
         return map_get_project_response(serialized_response)
-    except Exception as e:
+
+    except APIException as custom_exception:
         return JsonResponse({
-            'error': str(e)
+            'more info': custom_exception.default_detail
+        },
+            safe=False,
+            status=custom_exception.status_code
+        )
+
+    except Exception as exception:
+        return JsonResponse({
+            'error': str(exception)
         },
             safe=False,
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -183,9 +247,18 @@ def add_project(request):
         serializer_response = ProjectSerializer(new_project)
         mapped_response = map_post_project_response(serializer_response)
         return mapped_response
-    except Exception as e:
+
+    except APIException as custom_exception:
         return JsonResponse({
-            'error': str(e)
+            'more info': custom_exception.default_detail
+        },
+            safe=False,
+            status=custom_exception.status_code
+        )
+
+    except Exception as exception:
+        return JsonResponse({
+            'error': str(exception)
         },
             safe=False,
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -208,9 +281,18 @@ def update_project(request, project_id: int):
             return mapped_response
         else:
             raise ProjectNotFound(code=404)
-    except Exception as e:
+
+    except APIException as custom_exception:
         return JsonResponse({
-            'error': str(e)
+            'more info': custom_exception.default_detail
+        },
+            safe=False,
+            status=custom_exception.status_code
+        )
+
+    except Exception as exception:
+        return JsonResponse({
+            'error': str(exception)
         },
             safe=False,
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -232,10 +314,20 @@ def delete_project(request, project_id: int):
             return mapped_response
         else:
             raise ProjectNotFound(code=404)
-    except Exception as e:
+
+    except APIException as custom_exception:
         return JsonResponse({
-            'error': str(e)
+            'more info': custom_exception.default_detail
+        },
+            safe=False,
+            status=custom_exception.status_code
+        )
+
+    except Exception as exception:
+        return JsonResponse({
+            'error': str(exception)
         },
             safe=False,
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
