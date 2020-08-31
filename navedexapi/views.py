@@ -7,14 +7,17 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
+from navedexapi.exceptions import NaverNotFound, ProjectNotFound
 from navedexapi.mappers import map_get_naver_response, map_post_naver_response, map_delete_naver_response, \
-    map_get_project_response
+    map_get_project_response, map_post_project_response, map_patch_naver_response, map_patch_project_response, \
+    map_delete_project_response
 from navedexapi.persistency import retrieve_all_navers, retrieve_naver, retrieve_naver_projects, create_naver, \
-    update_retrieved_naver, delete_retrieved_naver, retrieve_all_projects, retrieve_project, retrieve_project_navers
+    update_retrieved_naver, delete_retrieved_naver, retrieve_all_projects, retrieve_project, retrieve_project_navers, \
+    create_project, update_retrieved_project, delete_retrieved_project
 from navedexapi.serializers import NaverSerializer, ProjectSerializer
 
-from navedexapi.validations import validate_post_body, validate_naver_query_params, validate_object_id, \
-    validate_project_query_params
+from navedexapi.validations import validate_naver_post_body, validate_naver_query_params, validate_object_id, \
+    validate_project_query_params, validate_project_post_body
 
 
 @api_view(["DELETE"])
@@ -30,8 +33,7 @@ def delete_naver(request, naver_id: int):
             mapped_response = map_delete_naver_response()
             return mapped_response
         else:
-            #TODO criar exceção pra quando o naver não existir
-            raise Exception
+            raise NaverNotFound(code=404)
     except Exception as e:
         return JsonResponse({
             'error': str(e)
@@ -52,11 +54,10 @@ def update_naver(request, naver_id: int):
             updated_naver = update_retrieved_naver(request_body=request_body,
                                                    retrieved_naver=retrieved_naver)
             serializer_response = NaverSerializer(updated_naver)
-            mapped_response = map_post_naver_response(serializer_response)
+            mapped_response = map_patch_naver_response(serializer_response)
             return mapped_response
         else:
-            #TODO criar exceção pra quando o naver não existir
-            raise Exception
+            raise NaverNotFound(code=404)
     except Exception as e:
         return JsonResponse({
             'error': str(e)
@@ -71,7 +72,7 @@ def add_naver(request):
     request_body = json.loads(request.body)
     user = request.user
     try:
-        validate_post_body(request_body=request_body)
+        validate_naver_post_body(request_body=request_body)
         new_naver = create_naver(request_body=request_body,
                                 request_user=user)
         serializer_response = NaverSerializer(new_naver)
@@ -131,9 +132,9 @@ def retrieve_naver_by_id(request, naver_id: int):
 @permission_classes([IsAuthenticated])
 def retrieve_project_by_id(request, project_id: int):
     validate_object_id(project_id)
-
+    user = request.user
     try:
-        retrieved_project = retrieve_project(project_id)
+        retrieved_project = retrieve_project(project_id=project_id, user_id=user.id)
         if retrieved_project:
             retrieved_navers = retrieve_project_navers(navers_list=retrieved_project.navers)
             serialized_response = ProjectSerializer(retrieved_project, many=True)
@@ -161,6 +162,76 @@ def retrieve_projects_list(request):
 
         serialized_response = ProjectSerializer(retrieved_projects_list, many=True)
         return map_get_project_response(serialized_response)
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        },
+            safe=False,
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_project(request):
+    request_body = json.loads(request.body)
+    user = request.user
+    try:
+        validate_project_post_body(request_body=request_body)
+        new_project = create_project(request_body=request_body,
+                                     request_user=user)
+        serializer_response = ProjectSerializer(new_project)
+        mapped_response = map_post_project_response(serializer_response)
+        return mapped_response
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        },
+            safe=False,
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def update_project(request, project_id: int):
+    request_body = json.loads(request.body)
+    validate_object_id(project_id)
+    user = request.user
+    try:
+        retrieved_project = retrieve_project(project_id=project_id, user_id=user.id)
+        if retrieved_project:
+            updated_project = update_retrieved_project(request_body=request_body,
+                                                       retrieved_project=retrieved_project)
+            serializer_response = ProjectSerializer(updated_project)
+            mapped_response = map_patch_project_response(serializer_response)
+            return mapped_response
+        else:
+            raise ProjectNotFound(code=404)
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        },
+            safe=False,
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_project(request, project_id: int):
+    validate_object_id(project_id)
+    user = request.user
+
+    try:
+        retrieved_project = retrieve_project(project_id=project_id, user_id=user.id)
+
+        if retrieved_project:
+            delete_retrieved_project(retrieved_project=retrieved_project)
+            mapped_response = map_delete_project_response()
+            return mapped_response
+        else:
+            raise ProjectNotFound(code=404)
     except Exception as e:
         return JsonResponse({
             'error': str(e)

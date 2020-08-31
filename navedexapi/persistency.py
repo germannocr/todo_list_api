@@ -21,8 +21,8 @@ def retrieve_naver(naver_id: int):
     return retrieved_naver
 
 
-def retrieve_project(project_id: int):
-    retrieved_project = Project.objects.filter(id=project_id)
+def retrieve_project(project_id: int, user_id: int):
+    retrieved_project = Project.objects.filter(id=project_id, created_by_user=user_id)
 
     return retrieved_project
 
@@ -50,6 +50,16 @@ def create_naver(request_body: dict, request_user: User):
     return created_naver
 
 
+def create_project(request_body: dict, request_user: User):
+    created_project = Project.objects.create(
+        name=request_body.get('name'),
+        navers=request_body.get('navers'),
+        created_by_user=request_user.id
+    )
+
+    return created_project
+
+
 def update_retrieved_naver(request_body: dict, retrieved_naver: Naver):
     if request_body.get('name'):
         retrieved_naver.name = request_body.get('name')
@@ -66,6 +76,22 @@ def update_retrieved_naver(request_body: dict, retrieved_naver: Naver):
     return retrieved_naver
 
 
+def update_retrieved_project(request_body: dict, retrieved_project: Project):
+    if request_body.get('name'):
+        retrieved_project.name = request_body.get('name')
+    if request_body.get('navers'):
+        retrieved_project.navers = request_body.get('navers')
+
+    retrieved_project.save()
+
+    return retrieved_project
+
+
 def delete_retrieved_naver(retrieved_naver: Naver):
     retrieved_naver.delete()
+    return
+
+
+def delete_retrieved_project(retrieved_project: Project):
+    retrieved_project.delete()
     return

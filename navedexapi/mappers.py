@@ -13,6 +13,13 @@ def map_delete_naver_response():
     )
 
 
+def map_delete_project_response():
+    return JsonResponse(
+        None,
+        safe=False,
+        status=status.HTTP_204_NO_CONTENT
+    )
+
 
 def map_patch_naver_response(serialized_response):
     return JsonResponse(
@@ -25,6 +32,26 @@ def map_patch_naver_response(serialized_response):
 
 
 def map_post_naver_response(serialized_response):
+    return JsonResponse(
+        {
+            'content': serialized_response.data
+        },
+        safe=False,
+        status=status.HTTP_201_CREATED
+    )
+
+
+def map_post_project_response(serialized_response):
+    return JsonResponse(
+        {
+            'content': serialized_response.data
+        },
+        safe=False,
+        status=status.HTTP_201_CREATED
+    )
+
+
+def map_patch_project_response(serialized_response):
     return JsonResponse(
         {
             'content': serialized_response.data
