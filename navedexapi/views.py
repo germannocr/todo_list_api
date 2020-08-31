@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from navedexapi.exceptions import NaverNotFound, ProjectNotFound
 from navedexapi.mappers import map_get_naver_response, map_post_naver_response, map_delete_naver_response, \
     map_get_project_response, map_post_project_response, map_patch_naver_response, map_patch_project_response, \
-    map_delete_project_response
+    map_delete_project_response, prepare_company_time_filter
 from navedexapi.persistency import retrieve_all_navers, retrieve_naver, retrieve_naver_projects, create_naver, \
     update_retrieved_naver, delete_retrieved_naver, retrieve_all_projects, retrieve_project, retrieve_project_navers, \
     create_project, update_retrieved_project, delete_retrieved_project
@@ -92,8 +92,9 @@ def add_naver(request):
 def retrieve_navers_list(request):
     query_params_filters = request.query_params
     validate_naver_query_params(query_params_filters)
+    user = request.user
     try:
-        retrieved_navers_list = retrieve_all_navers(query_params_filters=query_params_filters)
+        retrieved_navers_list = retrieve_all_navers(query_params_filters=query_params_filters, user_id=user.id)
         serialized_response = NaverSerializer(retrieved_navers_list, many=True)
         return map_get_naver_response(serialized_response)
     except Exception as e:
@@ -109,16 +110,15 @@ def retrieve_navers_list(request):
 @permission_classes([IsAuthenticated])
 def retrieve_naver_by_id(request, naver_id: int):
     validate_object_id(naver_id)
-
+    user = request.user
     try:
-        retrieved_naver = retrieve_naver(naver_id)
+        retrieved_naver = retrieve_naver(naver_id=naver_id, user_id=user.id)
         if retrieved_naver:
             retrieved_projects = retrieve_naver_projects(projects_list=retrieved_naver.projects)
             serialized_response = NaverSerializer(retrieved_naver, many=True)
             return map_get_naver_response(serialized_response, retrieved_projects)
         else:
-            # TODO criar exceção pra quando o naver não existir
-            raise Exception
+            raise NaverNotFound(code=404)
     except Exception as e:
         return JsonResponse({
             'error': str(e)
@@ -140,8 +140,7 @@ def retrieve_project_by_id(request, project_id: int):
             serialized_response = ProjectSerializer(retrieved_project, many=True)
             return map_get_project_response(serialized_response=serialized_response, navers_list=retrieved_navers)
         else:
-            # TODO criar exceção pra quando o project não existir
-            raise Exception
+            raise ProjectNotFound(code=404)
     except Exception as e:
         return JsonResponse({
             'error': str(e)
@@ -156,9 +155,9 @@ def retrieve_project_by_id(request, project_id: int):
 def retrieve_projects_list(request):
     query_params_filters = request.query_params
     validate_project_query_params(query_params=query_params_filters)
-
+    user = request.user
     try:
-        retrieved_projects_list = retrieve_all_projects(query_params_filters=query_params_filters)
+        retrieved_projects_list = retrieve_all_projects(query_params_filters=query_params_filters, user_id=user.id)
 
         serialized_response = ProjectSerializer(retrieved_projects_list, many=True)
         return map_get_project_response(serialized_response)

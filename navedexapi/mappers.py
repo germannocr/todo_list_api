@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from dateutil.relativedelta import relativedelta
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from rest_framework import status
@@ -61,7 +64,7 @@ def map_patch_project_response(serialized_response):
     )
 
 
-def map_get_naver_response(serialized_response: NaverSerializer, projects_list: list = None):
+def map_get_project_response(serialized_response: ProjectSerializer, projects_list: list = None):
     if projects_list:
         serialized_response.data["projects"] = []
         for current_project in projects_list:
@@ -80,7 +83,7 @@ def map_get_naver_response(serialized_response: NaverSerializer, projects_list: 
             status=status.HTTP_200_OK
         )
     else:
-        del serialized_response.data['projects']
+        del serialized_response.data['navers']
         return JsonResponse(
             {
                 'content': serialized_response.data
@@ -90,7 +93,7 @@ def map_get_naver_response(serialized_response: NaverSerializer, projects_list: 
         )
 
 
-def map_get_project_response(serialized_response: ProjectSerializer, navers_list: list = None):
+def map_get_naver_response(serialized_response: NaverSerializer, navers_list: list = None):
     if navers_list:
         serialized_response.data["navers"] = []
         for current_naver in navers_list:
@@ -112,7 +115,8 @@ def map_get_project_response(serialized_response: ProjectSerializer, navers_list
             status=status.HTTP_200_OK
         )
     else:
-        del serialized_response.data['navers']
+        for current_naver in serialized_response.data:
+            del current_naver['projects']
         return JsonResponse(
             {
                 'content': serialized_response.data
@@ -120,3 +124,16 @@ def map_get_project_response(serialized_response: ProjectSerializer, navers_list
             safe=False,
             status=status.HTTP_200_OK
         )
+
+
+def prepare_company_time_filter(query_params: dict):
+    current_date = datetime.today()
+
+    request_date = relativedelta(months=query_params.get('company_time'))
+
+    admission_date = current_date - request_date
+
+    query_params['admission_date'] = admission_date
+    query_params.pop('company_time', None)
+
+    return query_params

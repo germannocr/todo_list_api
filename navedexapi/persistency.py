@@ -3,20 +3,20 @@ from django.contrib.auth.models import User
 from navedexapi.models import Naver, Project
 
 
-def retrieve_all_navers(query_params_filters: dict):
-    retrieved_navers_list = Naver.objects.filter(**query_params_filters)
+def retrieve_all_navers(query_params_filters: dict, user_id: int):
+    retrieved_navers_list = Naver.objects.filter(created_by_user=user_id, **query_params_filters)
 
     return retrieved_navers_list
 
 
-def retrieve_all_projects(query_params_filters: dict):
-    retrieved_projects_list = Project.objects.filter(**query_params_filters)
+def retrieve_all_projects(query_params_filters: dict, user_id: int):
+    retrieved_projects_list = Project.objects.filter(created_by_user=user_id, **query_params_filters)
 
     return retrieved_projects_list
 
 
-def retrieve_naver(naver_id: int):
-    retrieved_naver = Naver.objects.filter(id=naver_id)
+def retrieve_naver(naver_id: int, user_id: int):
+    retrieved_naver = Naver.objects.filter(id=naver_id, created_by_user=user_id)
 
     return retrieved_naver
 

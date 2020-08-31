@@ -1,4 +1,5 @@
 from navedexapi.exceptions import MissingRequiredFields, InvalidFieldType, InvalidQueryParam, InvalidIdentifier
+from navedexapi.mappers import prepare_company_time_filter
 
 
 def validate_naver_post_body(request_body: dict):
@@ -28,7 +29,7 @@ def validate_project_post_body(request_body: dict):
 
 
 def validate_naver_query_params(query_params: dict):
-    possible_query_params = ['name', 'company-time', 'job-role']
+    possible_query_params = ['name', 'company_time', 'job_role']
 
     request_query_params_keys = query_params.keys()
 
@@ -36,6 +37,12 @@ def validate_naver_query_params(query_params: dict):
         if current_query_param not in possible_query_params:
             raise InvalidQueryParam(code=400)
 
+    if 'company_time' in request_query_params_keys:
+        query_params_filters = prepare_company_time_filter(query_params=query_params)
+
+        return query_params_filters
+    else:
+        return query_params
 
 def validate_project_query_params(query_params: dict):
     possible_query_params = ['name']

@@ -8,7 +8,7 @@ class Naver(models.Model):
 
         db_table = 'naver'
 
-    id = models.IntegerField(primary_key=True, unique=True)
+    id = models.AutoField(primary_key=True, unique=True)
     name = models.CharField(max_length=60)
     birthdate = models.CharField(max_length=10)
     admission_date = models.CharField(max_length=10)
