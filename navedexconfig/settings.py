@@ -104,10 +104,10 @@ WSGI_APPLICATION = 'navedexconfig.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'navedex',
-        'USER': 'postgres',
-        'PASSWORD': 'secret1',
-        'HOST': 'localhost',
+        'NAME': 'df6vqkengiuncu',
+        'USER': 'ivsdbvogcacrap',
+        'PASSWORD': '1d74f57d46d2b9c13d0a1650778656fbb7f17083dd6a4a89e76c44c5c05b9942',
+        'HOST': 'ec2-54-161-150-170.compute-1.amazonaws.com',
         'PORT': '5432'
     }
 }
