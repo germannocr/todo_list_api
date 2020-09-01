@@ -1,4 +1,9 @@
-from navedexapi.exceptions import MissingRequiredFields, InvalidFieldType, InvalidQueryParam, InvalidIdentifier
+from navedexapi.exceptions import (
+    MissingRequiredFields,
+    InvalidFieldType,
+    InvalidQueryParam,
+    InvalidIdentifier
+)
 from navedexapi.mappers import prepare_company_time_filter
 
 
@@ -9,7 +14,7 @@ def validate_naver_post_body(request_body: dict):
     for current_required_field in required_fields:
         if current_required_field not in request_fields:
             raise MissingRequiredFields()
-        if not isinstance(current_required_field, str) and current_required_field != 'projects':
+        if not isinstance(request_body[current_required_field], str) and current_required_field != 'projects':
             raise InvalidFieldType()
 
 

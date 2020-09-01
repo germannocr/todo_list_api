@@ -8,17 +8,46 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import APIException
 from rest_framework.permissions import IsAuthenticated
 
-from navedexapi.exceptions import NaverNotFound, ProjectNotFound
-from navedexapi.mappers import map_get_naver_response, map_post_naver_response, map_delete_naver_response, \
-    map_get_project_response, map_post_project_response, map_patch_naver_response, map_patch_project_response, \
-    map_delete_project_response, prepare_company_time_filter
-from navedexapi.persistency import retrieve_all_navers, retrieve_naver, retrieve_naver_projects, create_naver, \
-    update_retrieved_naver, delete_retrieved_naver, retrieve_all_projects, retrieve_project, retrieve_project_navers, \
-    create_project, update_retrieved_project, delete_retrieved_project
-from navedexapi.serializers import NaverSerializer, ProjectSerializer
+from navedexapi.serializers import (
+    NaverSerializer,
+    ProjectSerializer
+)
+from navedexapi.exceptions import (
+    NaverNotFound,
+    ProjectNotFound
+)
+from navedexapi.mappers import (
+    map_get_naver_response,
+    map_post_naver_response,
+    map_delete_naver_response,
+    map_get_project_response,
+    map_post_project_response,
+    map_patch_naver_response,
+    map_patch_project_response,
+    map_delete_project_response
+)
+from navedexapi.persistency import (
+    retrieve_all_navers,
+    retrieve_naver,
+    retrieve_naver_projects,
+    create_naver,
+    update_retrieved_naver,
+    delete_retrieved_naver,
+    retrieve_all_projects,
+    retrieve_project,
+    retrieve_project_navers,
+    create_project,
+    update_retrieved_project,
+    delete_retrieved_project
+)
 
-from navedexapi.validations import validate_naver_post_body, validate_naver_query_params, validate_object_id, \
-    validate_project_query_params, validate_project_post_body
+from navedexapi.validations import (
+    validate_naver_post_body,
+    validate_naver_query_params,
+    validate_object_id,
+    validate_project_query_params,
+    validate_project_post_body
+)
 
 
 @api_view(["DELETE"])

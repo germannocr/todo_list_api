@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
-from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from rest_framework import status
 
@@ -120,7 +119,7 @@ def map_get_naver_response(serialized_response: NaverSerializer, projects_list: 
             del current_naver['projects']
         return JsonResponse(
             {
-                'content': serialized_response.data
+                'content': serialized_response.data[0]
             },
             safe=False,
             status=status.HTTP_200_OK

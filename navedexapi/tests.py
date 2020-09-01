@@ -20,12 +20,21 @@ from navedexapi.models import Naver, Project
 class NaverTest(TestCase):
 
     def setUp(self):
-        user = User.objects.first()
-        payload = jwt_payload_handler(user)
-        self.token = jwt_encode_handler(payload)
+        user_payload = {
+            "username": "germannocorreia",
+            "password1": "senhadeteste",
+            "password2": "senhadeteste"
+        }
+        response = client.post(
+            f"{API_URL}registration/",
+            data=json.dumps(user_payload),
+            content_type='application/json'
+        )
+
+        self.token = json.loads(response.content)["token"]
 
         Naver.objects.create(
-            id=1,
+            id=10,
             name="Germanno Correia",
             birthdate="18-08-1996",
             admission_date="31-08-2020",
@@ -50,17 +59,17 @@ class NaverTest(TestCase):
             "projects": "[1]"
         }
 
+
     def test_create_naver(self):
         headers = {
-            "Authorization": f"JWT {self.token}"
+            "HTTP_AUTHORIZATION": f"JWT {self.token}"
         }
         response = client.post(
-            f"{API_URL}createnaver",
+            f"{API_URL}createnaver/",
             data=json.dumps(self.valid_payload),
             content_type='application/json',
-            headers=headers
+            **headers
         )
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         response = json.loads(response.content)["content"]
         self.assertEqual(response.get('name'), 'João Pedro')
@@ -70,21 +79,23 @@ class NaverTest(TestCase):
         self.assertEqual(response.get('projects'), [1])
 
         response = client.post(
-            f"{API_URL}createnaver",
+            f"{API_URL}createnaver/",
             data=json.dumps(self.invalid_payload),
-            content_type='application/json')
+            content_type='application/json',
+            **headers
+        )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_naver_get_by_id(self):
         headers = {
-            "Authorization": f"JWT {self.token}"
+            "HTTP_AUTHORIZATION": f"JWT {self.token}"
         }
         response = client.post(
-            f"{API_URL}createnaver",
+            f"{API_URL}createnaver/",
             data=json.dumps(self.valid_payload),
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -97,17 +108,15 @@ class NaverTest(TestCase):
 
         naver_id = response.get('id')
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
         response = client.get(
-            f"{API_URL}getnaver/{naver_id}",
+            f"{API_URL}getnaver/{naver_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = json.loads(response.content)["content"]
+        print(response)
         self.assertEqual(response.get('name'), 'João Pedro')
         self.assertEqual(response.get('birthdate'), '01-01-1996')
         self.assertEqual(response.get('admission_date'), '18-08-2020')
@@ -116,13 +125,13 @@ class NaverTest(TestCase):
 
     def test_create_naver_get_list(self):
         headers = {
-            "Authorization": f"JWT {self.token}"
+            "HTTP_AUTHORIZATION": f"JWT {self.token}"
         }
         response = client.post(
-            f"{API_URL}createnaver",
+            f"{API_URL}createnaver/",
             data=json.dumps(self.valid_payload),
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -133,13 +142,10 @@ class NaverTest(TestCase):
         self.assertEqual(response.get('job_role'), 'CTO')
         self.assertEqual(response.get('projects'), [1])
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
         response = client.get(
             f"{API_URL}getnaverslist/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -152,13 +158,13 @@ class NaverTest(TestCase):
 
     def test_create_naver_update(self):
         headers = {
-            "Authorization": f"JWT {self.token}"
+            "HTTP_AUTHORIZATION": f"JWT {self.token}"
         }
         response = client.post(
-            f"{API_URL}createnaver",
+            f"{API_URL}createnaver/",
             data=json.dumps(self.valid_payload),
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -171,13 +177,10 @@ class NaverTest(TestCase):
 
         naver_id = response.get('id')
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
         response = client.get(
-            f"{API_URL}getnaver/{naver_id}",
+            f"{API_URL}getnaver/{naver_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -196,15 +199,11 @@ class NaverTest(TestCase):
             "projects": [1]
         }
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
-
         response = client.patch(
-            f"{API_URL}updatenaver/{naver_id}",
+            f"{API_URL}updatenaver/{naver_id}/",
             data=json.dumps(patch_body),
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -215,14 +214,10 @@ class NaverTest(TestCase):
         self.assertEqual(response.get('job_role'), 'Frontend Dev')
         self.assertEqual(response.get('projects'), [1])
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
-
         response = client.get(
-            f"{API_URL}getnaver/{naver_id}",
+            f"{API_URL}getnaver/{naver_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -235,13 +230,13 @@ class NaverTest(TestCase):
 
     def test_create_naver_delete(self):
         headers = {
-            "Authorization": f"JWT {self.token}"
+            "HTTP_AUTHORIZATION": f"JWT {self.token}"
         }
         response = client.post(
-            f"{API_URL}createnaver",
+            f"{API_URL}createnaver/",
             data=json.dumps(self.valid_payload),
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -254,13 +249,10 @@ class NaverTest(TestCase):
 
         naver_id = response.get('id')
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
         response = client.get(
-            f"{API_URL}getnaver/{naver_id}",
+            f"{API_URL}getnaver/{naver_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -271,24 +263,16 @@ class NaverTest(TestCase):
         self.assertEqual(response.get('job_role'), 'CTO')
         self.assertEqual(response.get('projects'), [1])
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
-
         client.delete(
-            f"{API_URL}deletenaver/{naver_id}",
+            f"{API_URL}deletenaver/{naver_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
-
         response = client.get(
-            f"{API_URL}getnaver/{naver_id}",
+            f"{API_URL}getnaver/{naver_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -297,9 +281,18 @@ class NaverTest(TestCase):
 class ProjectTest(TestCase):
 
     def setUp(self):
-        user = User.objects.first()
-        payload = jwt_payload_handler(user)
-        self.token = jwt_encode_handler(payload)
+        user_payload = {
+            "username": "germannocorreia",
+            "password1": "senhadeteste",
+            "password2": "senhadeteste"
+        }
+        response = client.post(
+            f"{API_URL}registration/",
+            data=json.dumps(user_payload),
+            content_type='application/json'
+        )
+
+        self.token = json.loads(response.content)["token"]
 
         Project.objects.create(
             id=1,
@@ -320,13 +313,13 @@ class ProjectTest(TestCase):
 
     def test_create_project(self):
         headers = {
-            "Authorization": f"JWT {self.token}"
+            "HTTP_AUTHORIZATION": f"JWT {self.token}"
         }
         response = client.post(
-            f"{API_URL}createproject",
+            f"{API_URL}createproject/",
             data=json.dumps(self.valid_payload),
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -335,7 +328,7 @@ class ProjectTest(TestCase):
         self.assertEqual(response.get('navers'), [1])
 
         response = client.post(
-            f"{API_URL}createproject",
+            f"{API_URL}createproject/",
             data=json.dumps(self.invalid_payload),
             content_type='application/json')
 
@@ -343,13 +336,13 @@ class ProjectTest(TestCase):
 
     def test_create_project_get_by_id(self):
         headers = {
-            "Authorization": f"JWT {self.token}"
+            "HTTP_AUTHORIZATION": f"JWT {self.token}"
         }
         response = client.post(
-            f"{API_URL}createproject",
+            f"{API_URL}createproject/",
             data=json.dumps(self.valid_payload),
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -359,13 +352,10 @@ class ProjectTest(TestCase):
 
         project_id = response.get('id')
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
         response = client.get(
-            f"{API_URL}getproject/{project_id}",
+            f"{API_URL}getproject/{project_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -375,13 +365,13 @@ class ProjectTest(TestCase):
 
     def test_create_project_get_list(self):
         headers = {
-            "Authorization": f"JWT {self.token}"
+            "HTTP_AUTHORIZATION": f"JWT {self.token}"
         }
         response = client.post(
-            f"{API_URL}createproject",
+            f"{API_URL}createproject/",
             data=json.dumps(self.valid_payload),
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -389,13 +379,10 @@ class ProjectTest(TestCase):
         self.assertEqual(response.get('name'), 'Navedex GUI')
         self.assertEqual(response.get('navers'), [1])
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
         response = client.get(
             f"{API_URL}getprojectlist/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -405,13 +392,13 @@ class ProjectTest(TestCase):
 
     def test_create_project_update(self):
         headers = {
-            "Authorization": f"JWT {self.token}"
+            "HTTP_AUTHORIZATION": f"JWT {self.token}"
         }
         response = client.post(
-            f"{API_URL}createproject",
+            f"{API_URL}createproject/",
             data=json.dumps(self.valid_payload),
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -421,13 +408,10 @@ class ProjectTest(TestCase):
 
         project_id = response.get('id')
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
         response = client.get(
-            f"{API_URL}getproject/{project_id}",
+            f"{API_URL}getproject/{project_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -440,15 +424,11 @@ class ProjectTest(TestCase):
             "navers": [2]
         }
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
-
         response = client.patch(
-            f"{API_URL}updateproject/{project_id}",
+            f"{API_URL}updateproject/{project_id}/",
             data=json.dumps(patch_body),
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -456,14 +436,10 @@ class ProjectTest(TestCase):
         self.assertEqual(response.get('name'), 'Projeto de Teste')
         self.assertEqual(response.get('navers'), [1])
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
-
         response = client.get(
-            f"{API_URL}getproject/{project_id}",
+            f"{API_URL}getproject/{project_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -473,13 +449,13 @@ class ProjectTest(TestCase):
 
     def test_create_project_delete(self):
         headers = {
-            "Authorization": f"JWT {self.token}"
+            "HTTP_AUTHORIZATION": f"JWT {self.token}"
         }
         response = client.post(
-            f"{API_URL}createproject",
+            f"{API_URL}createproject/",
             data=json.dumps(self.valid_payload),
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -489,13 +465,10 @@ class ProjectTest(TestCase):
 
         project_id = response.get('id')
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
         response = client.get(
-            f"{API_URL}getproject/{project_id}",
+            f"{API_URL}getproject/{project_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -503,24 +476,16 @@ class ProjectTest(TestCase):
         self.assertEqual(response.get('name'), 'Navedex GUI')
         self.assertEqual(response.get('navers'), [1])
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
-
         client.delete(
-            f"{API_URL}deleteproject/{project_id}",
+            f"{API_URL}deleteproject/{project_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
-        headers = {
-            "Authorization": f"JWT {self.token}"
-        }
-
         response = client.get(
-            f"{API_URL}getproject/{project_id}",
+            f"{API_URL}getproject/{project_id}/",
             content_type='application/json',
-            headers=headers
+            **headers
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
