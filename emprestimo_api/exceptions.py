@@ -24,3 +24,15 @@ class EmprestimoAlreadyPaid(APIException):
     status_code = 400
     default_detail = "The loan related to this payment has already had its debit balance paid in full."
     default_code = "emprestimo_already_paid"
+
+
+class EmprestimoNotFound(APIException):
+    status_code = 404
+    default_detail = "The loan related to this payment doesnt exist."
+    default_code = "emprestimo_not_found"
+
+
+class EmprestimoPaidAmountExceeded(APIException):
+    status_code = 400
+    default_detail = "The amount paid exceeds the loan's outstanding balance."
+    default_code = "emprestimo_paid_amount_exceeded"

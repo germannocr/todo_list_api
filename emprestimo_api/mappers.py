@@ -5,6 +5,7 @@ from decimal import Decimal
 from django.http import JsonResponse
 from rest_framework import status
 
+from emprestimo_api.exceptions import EmprestimoPaidAmountExceeded
 from emprestimo_api.models import Emprestimo
 from emprestimo_api.serializers import EmprestimoSerializer, PagamentoSerializer
 
@@ -70,7 +71,7 @@ def calculate_debit_balance(request_body: dict, retrieved_emprestimo: Emprestimo
     saldo_devedor_resultante = saldo_devedor - valor_amortizacao
 
     if saldo_devedor_resultante < 0:
-        saldo_devedor_resultante = 0
+        raise EmprestimoPaidAmountExceeded(code=400)
 
     retrieved_emprestimo.saldo_devedor = saldo_devedor_resultante
     retrieved_emprestimo.save(force_update=True)

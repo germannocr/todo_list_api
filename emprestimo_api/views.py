@@ -1,6 +1,5 @@
 import json
 
-from django.db import transaction
 from django.http import JsonResponse
 from rest_framework import status
 
@@ -9,6 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import APIException
 from rest_framework.permissions import IsAuthenticated
 
+from emprestimo_api.exceptions import EmprestimoNotFound
 from emprestimo_api.mappers import create_custom_fields, map_post_emprestimo_response, map_get_emprestimo_response, \
     map_get_pagamento_response, map_post_pagamento_response, calculate_debit_balance
 from emprestimo_api.persistency import create_emprestimo, retrieve_all_emprestimos, retrieve_all_pagamentos, \
@@ -120,8 +120,7 @@ def add_pagamento(request):
             mapped_response = map_post_pagamento_response(serializer_response)
             return mapped_response
         else:
-            #TODO Exceção para emprestimo não existe
-            raise Exception
+            raise EmprestimoNotFound(code=404)
 
     except APIException as custom_exception:
         return JsonResponse({
