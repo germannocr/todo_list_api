@@ -38,7 +38,7 @@ class EmprestimoCreation(TestCase):
             "nome_cliente": "Matheus Cansian"
         }
         self.invalid_payload = {
-            "valor_nominal": "30000.00",
+            "valor_nominal": "30000.0",
             "taxa_juros": "1.50",
             "banco": 2,
             "nome_cliente": True
@@ -61,12 +61,13 @@ class EmprestimoCreation(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         response = json.loads(response.content)["content"]
-        self.assertEqual(response.get('valor_nominal'), self.valid_payload.get('valor_nominal'))
-        self.assertEqual(response.get('saldo_devedor'), self.valid_payload.get('valor_nominal'))
-        self.assertEqual(response.get('taxa_juros'), self.valid_payload.get('taxa_juros'))
+        self.assertEqual(response.get('valor_nominal'), '30000.00')
+        self.assertEqual(response.get('saldo_devedor'), '30000.00')
+        self.assertEqual(response.get('taxa_juros'), '1.50')
         self.assertEqual(response.get('banco'), self.valid_payload.get('banco'))
         self.assertEqual(response.get('nome_cliente'), self.valid_payload.get('nome_cliente'))
         self.assertEqual(response.get('data_solicitacao'), datetime.today().strftime("%Y-%m-%d"))
+        self.assertEqual(response.get('endereco_ip'), ip_address)
 
         response = client.post(
             f"{API_URL}createemprestimo/",
@@ -76,3 +77,36 @@ class EmprestimoCreation(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_emprestimo_get_list(self):
+        headers = {
+            "HTTP_AUTHORIZATION": f"JWT {self.token}"
+        }
+
+        hostname = socket.gethostname()
+        ip_address = socket.gethostbyname(hostname)
+
+        response = client.post(
+            f"{API_URL}createemprestimo/",
+            data=json.dumps(self.valid_payload),
+            content_type='application/json',
+            **headers
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = client.get(
+            f"{API_URL}getemprestimolist/",
+            content_type='application/json',
+            **headers
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = json.loads(response.content)["content"][0]
+        self.assertEqual(response.get('valor_nominal'), '30000.00')
+        self.assertEqual(response.get('saldo_devedor'), '30000.00')
+        self.assertEqual(response.get('taxa_juros'), '1.50')
+        self.assertEqual(response.get('banco'), self.valid_payload.get('banco'))
+        self.assertEqual(response.get('nome_cliente'), self.valid_payload.get('nome_cliente'))
+        self.assertEqual(response.get('data_solicitacao'), datetime.today().strftime("%Y-%m-%d"))
+        self.assertEqual(response.get('endereco_ip'), ip_address)
