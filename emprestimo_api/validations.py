@@ -1,7 +1,11 @@
 from decimal import Decimal
-
-from emprestimo_api.exceptions import MissingRequiredFields, InvalidFieldType, InvalidFieldValue, EmprestimoAlreadyPaid
 from emprestimo_api.models import Emprestimo
+from emprestimo_api.exceptions import (
+    MissingRequiredFields,
+    InvalidFieldType,
+    InvalidFieldValue,
+    EmprestimoAlreadyPaid
+)
 
 
 def validate_emprestimo_identifier(emprestimo_id: int):
@@ -25,8 +29,20 @@ def validate_emprestimo_post_body(request_body: dict):
         if current_required_field not in request_fields:
             raise MissingRequiredFields(code=400)
 
-        if not isinstance(request_body.get('taxa_juros'), float):
-            raise InvalidFieldType(code=400)
+    if not isinstance(request_body.get('taxa_juros'), float):
+        raise InvalidFieldType(code=400)
+
+    if not isinstance(request_body.get('valor_nominal'), float):
+        raise InvalidFieldType(code=400)
+
+    if not isinstance(request_body.get('banco'), str):
+        raise InvalidFieldType(code=400)
+
+    if not isinstance(request_body.get('nome_cliente'), str):
+        raise InvalidFieldType(code=400)
+
+    if request_body.get('valor_nominal') <= 0 or request_body.get('taxa_juros') <= 0:
+        raise InvalidFieldValue(code=400)
 
 
 def validate_pagamento_post_body(request_body: dict):
@@ -39,6 +55,18 @@ def validate_pagamento_post_body(request_body: dict):
     for current_required_field in required_fields:
         if current_required_field not in request_fields:
             raise MissingRequiredFields(code=400)
+
+    if not isinstance(request_body.get('identificador_emprestimo'), int):
+        raise InvalidFieldType(code=400)
+
+    if request_body.get('identificador_emprestimo') <= 0:
+        raise InvalidFieldValue(code=400)
+
+    if not isinstance(request_body.get('valor_pagamento'), float):
+        raise InvalidFieldType(code=400)
+
+    if request_body.get('valor_pagamento') <= 0:
+        raise InvalidFieldValue(code=400)
 
 
 def validate_saldo_devedor(retrieved_emprestimo: Emprestimo):

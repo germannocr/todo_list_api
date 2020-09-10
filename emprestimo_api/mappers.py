@@ -1,13 +1,13 @@
-import decimal
 import socket
 from decimal import Decimal
-
+from emprestimo_api.models import Emprestimo
 from django.http import JsonResponse
 from rest_framework import status
-
 from emprestimo_api.exceptions import EmprestimoPaidAmountExceeded
-from emprestimo_api.models import Emprestimo
-from emprestimo_api.serializers import EmprestimoSerializer, PagamentoSerializer
+from emprestimo_api.serializers import (
+    EmprestimoSerializer,
+    PagamentoSerializer
+)
 
 
 def create_custom_fields(request_body: dict):

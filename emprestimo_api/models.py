@@ -26,5 +26,5 @@ class Pagamento(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     identificador_emprestimo = models.IntegerField()
     data_pagamento = models.CharField(max_length=10)
-    valor_pagamento = models.CharField(max_length=20)
+    valor_pagamento = models.DecimalField(max_digits=8, decimal_places=2)
     created_by_user = models.IntegerField()

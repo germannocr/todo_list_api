@@ -1,6 +1,8 @@
 from rest_framework import serializers
-
-from emprestimo_api.models import Emprestimo, Pagamento
+from emprestimo_api.models import (
+    Emprestimo,
+    Pagamento
+)
 
 
 class EmprestimoSerializer(serializers.ModelSerializer):

@@ -1,8 +1,9 @@
 from datetime import datetime
-
 from django.contrib.auth.models import User
-
-from emprestimo_api.models import Emprestimo, Pagamento
+from emprestimo_api.models import (
+    Emprestimo,
+    Pagamento
+)
 
 
 def retrieve_all_emprestimos(user_id: int):

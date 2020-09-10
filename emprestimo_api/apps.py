@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class ConaferapiConfig(AppConfig):
+class OnidataApiConfig(AppConfig):
     name = 'emprestimo_api'
