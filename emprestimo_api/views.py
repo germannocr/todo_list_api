@@ -30,13 +30,24 @@ from emprestimo_api.mappers import (
     map_get_emprestimo_response,
     map_get_pagamento_response,
     map_post_pagamento_response,
-    calculate_debit_balance
+    update_debit_balance
 )
 
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def add_emprestimo(request):
+    """
+    Creates a new Emprestimo, performing all necessary validations.
+
+    #Parameters:
+        request (WSGIRequest): WSGIRequest type object which represents the request made by the user,
+                               passing necessary information to create the object and about the user
+                               who made the request.
+
+    #Returns:
+        mapped_response (JSON Response): Response, in JSON format, with the information of the created object.
+    """
     request_body = json.loads(request.body)
     user = request.user
     try:
@@ -68,6 +79,17 @@ def add_emprestimo(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def retrieve_emprestimo_list(request):
+    """
+    Retrieve a list of Emprestimo objects, performing all necessary validations.
+
+    #Parameters:
+        request (WSGIRequest): WSGIRequest type object which represents the request made by the user,
+                               passing necessary information to retrieve the objects list and about the user
+                               who made the request.
+
+    #Returns:
+        mapped_response (JSON Response): Response, in JSON format, with the information of the objects found.
+    """
     user = request.user
     try:
         retrieved_emprestimo_list = retrieve_all_emprestimos(user_id=user.id)
@@ -94,6 +116,17 @@ def retrieve_emprestimo_list(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def retrieve_pagamento_list(request):
+    """
+    Retrieve a list of Pagamento objects, performing all necessary validations.
+
+    #Parameters:
+        request (WSGIRequest): WSGIRequest type object which represents the request made by the user,
+                               passing necessary information to retrieve the objects list and about the user
+                               who made the request.
+
+    #Returns:
+        mapped_response (JSON Response): Response, in JSON format, with the information of the objects found.
+    """
     user = request.user
     try:
         retrieved_pagamentos_list = retrieve_all_pagamentos(user_id=user.id)
@@ -121,6 +154,17 @@ def retrieve_pagamento_list(request):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def add_pagamento(request):
+    """
+    Creates a new Pagamento, performing all necessary validations.
+
+    #Parameters:
+        request (WSGIRequest): WSGIRequest type object which represents the request made by the user,
+                               passing necessary information to create the object and about the user
+                               who made the request.
+
+    #Returns:
+        mapped_response (JSON Response): Response, in JSON format, with the information of the created object.
+    """
     request_body = json.loads(request.body)
     user = request.user
     emprestimo_identifier = request_body.get('identificador_emprestimo')
@@ -129,7 +173,7 @@ def add_pagamento(request):
         retrieved_emprestimo = retrieve_emprestimo(emprestimo_id=emprestimo_identifier, user_id=user.id)
         if retrieved_emprestimo:
             validate_saldo_devedor(retrieved_emprestimo=retrieved_emprestimo)
-            calculate_debit_balance(request_body=request_body, retrieved_emprestimo=retrieved_emprestimo)
+            update_debit_balance(request_body=request_body, retrieved_emprestimo=retrieved_emprestimo)
             new_pagamento = create_pagamento(request_body=request_body,
                                              request_user=user)
             serializer_response = PagamentoSerializer(new_pagamento)

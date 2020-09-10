@@ -2,6 +2,9 @@ from django.db import models
 
 
 class Emprestimo(models.Model):
+    """
+    The Emprestimo represents a loan of money that a user can apply for.
+    """
 
     class Meta:
 
@@ -19,7 +22,9 @@ class Emprestimo(models.Model):
 
 
 class Pagamento(models.Model):
-
+    """
+    The Pagamento represents a payment that the user can make in connection with a loan made.
+    """
     class Meta:
         db_table = 'pagamento'
 
